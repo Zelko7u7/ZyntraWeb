@@ -1,0 +1,149 @@
+<div class="workouts-container">
+  <header class="page-header">
+    <h1>SISTEMA DE <span class="cyan-text">ENTRENAMIENTO</span></h1>
+    <p>Crea tus rutinas, regístralas y supera tus marcas.</p>
+  </header>
+
+  @if (errorMessage()) {
+    <div class="error-banner">{{ errorMessage() }}</div>
+  }
+
+  <!-- ====== RUTINAS ====== -->
+  <section class="section-block">
+    <div class="section-head">
+      <h2 class="section-title">🏋️ Rutinas Disponibles</h2>
+      <button class="btn-neon" (click)="abrirNuevaRutina()">+ Nueva Rutina</button>
+    </div>
+
+    <div class="routines-grid">
+      @for (rutina of rutinas(); track rutina.id) {
+        <div class="routine-card">
+          <div class="card-header">
+            <h3>{{ rutina.nombre }}</h3>
+            <span class="badge">{{ rutina.nivel }}</span>
+          </div>
+          <div class="card-body">
+            <p><strong>Objetivo:</strong> {{ rutina.objetivo }}</p>
+            <p><strong>Duración:</strong> {{ rutina.duracion_min }} min</p>
+          </div>
+          <div class="card-actions">
+            <button class="btn-start" (click)="registrarEntrenamiento(rutina)">
+              INICIAR
+            </button>
+            <button class="btn-icon" (click)="abrirEditarRutina(rutina)" title="Editar">✏️</button>
+            <button class="btn-icon btn-danger" (click)="eliminarRutina(rutina)" title="Eliminar">🗑️</button>
+          </div>
+        </div>
+      } @empty {
+        <p class="empty-msg">No hay rutinas registradas. Crea la primera.</p>
+      }
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <!-- ====== HISTORIAL ====== -->
+  <section class="section-block">
+    <h2 class="section-title">🕒 Historial de Sesiones</h2>
+    <div class="history-table">
+      <div class="history-header">
+        <span>Fecha</span>
+        <span>Rutina</span>
+        <span>Duración</span>
+        <span>Calorías</span>
+        <span>Estado</span>
+        <span>Acciones</span>
+      </div>
+      @for (item of historial(); track item.id) {
+        <div class="history-row">
+          <span>{{ item.fecha | date:'short' }}</span>
+          <span>{{ nombreRutina(item.rutina) }}</span>
+          <span>{{ item.duracion }} min</span>
+          <span class="cyan-text">{{ item.calorias }} kcal</span>
+          <span class="status-tag">{{ item.estado }}</span>
+          <span class="row-actions">
+            <button class="btn-icon" (click)="abrirEditarEntrenamiento(item)" title="Editar">✏️</button>
+            <button class="btn-icon btn-danger" (click)="eliminarEntrenamiento(item)" title="Eliminar">🗑️</button>
+          </span>
+        </div>
+      } @empty {
+        <p class="empty-msg">No has registrado entrenamientos aún.</p>
+      }
+    </div>
+  </section>
+
+  <!-- ====== MODAL RUTINA ====== -->
+  @if (modalRutinaAbierto()) {
+    <div class="modal-overlay" (click)="cerrarModalRutina()"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>{{ editandoRutina() ? 'EDITAR' : 'NUEVA' }} <span class="cyan-text">RUTINA</span></h2>
+        <button class="btn-close" (click)="cerrarModalRutina()">✕</button>
+      </div>
+
+      <form (ngSubmit)="guardarRutina()" #form="ngForm">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" name="nombre" [(ngModel)]="rutinaForm.nombre" required autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>Objetivo</label>
+          <input type="text" name="objetivo" [(ngModel)]="rutinaForm.objetivo" placeholder="Hipertrofia, fuerza, cardio..." required autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>Nivel</label>
+          <input type="text" name="nivel" [(ngModel)]="rutinaForm.nivel" placeholder="Principiante / Intermedio / Avanzado" required autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label>Duración (minutos)</label>
+          <input type="number" name="duracion_min" [(ngModel)]="rutinaForm.duracion_min" min="1" required>
+        </div>
+
+        <button type="submit" class="btn-neon" [disabled]="form.invalid">
+          {{ editandoRutina() ? 'GUARDAR CAMBIOS' : 'CREAR RUTINA' }}
+        </button>
+      </form>
+    </div>
+  }
+
+  <!-- ====== MODAL ENTRENAMIENTO ====== -->
+  @if (modalEntrenamientoAbierto()) {
+    <div class="modal-overlay" (click)="cerrarModalEntrenamiento()"></div>
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>EDITAR <span class="cyan-text">ENTRENAMIENTO</span></h2>
+        <button class="btn-close" (click)="cerrarModalEntrenamiento()">✕</button>
+      </div>
+
+      <form (ngSubmit)="guardarEntrenamiento()" #formE="ngForm">
+        <div class="form-group">
+          <label>Rutina</label>
+          <select name="rutina" [(ngModel)]="entrenamientoForm.rutina">
+            <option [ngValue]="null">— Sin rutina —</option>
+            @for (r of rutinas(); track r.id) {
+              <option [ngValue]="r.id">{{ r.nombre }}</option>
+            }
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Fecha</label>
+          <input type="datetime-local" name="fecha" [(ngModel)]="entrenamientoForm.fecha" required>
+        </div>
+        <div class="form-group">
+          <label>Duración (minutos)</label>
+          <input type="number" name="duracion" [(ngModel)]="entrenamientoForm.duracion" min="0" required>
+        </div>
+        <div class="form-group">
+          <label>Calorías</label>
+          <input type="number" name="calorias" [(ngModel)]="entrenamientoForm.calorias" min="0" required>
+        </div>
+        <div class="form-group">
+          <label>Estado</label>
+          <input type="text" name="estado" [(ngModel)]="entrenamientoForm.estado" required autocomplete="off">
+        </div>
+
+        <button type="submit" class="btn-neon" [disabled]="formE.invalid">GUARDAR CAMBIOS</button>
+      </form>
+    </div>
+  }
+</div>

@@ -1,0 +1,65 @@
+<div class="home-container">
+
+  @if (cargando()) {
+    <div class="hero-section">
+      <h1>CARGANDO <span class="cyan-text">PERFIL</span></h1>
+      <p class="tagline">Sincronizando tus datos de atleta...</p>
+    </div>
+  }
+
+  @if (errorMessage()) {
+    <div class="hero-section">
+      <h1>ERROR DE <span class="cyan-text">CONEXIÓN</span></h1>
+      <p class="tagline">{{ errorMessage() }}</p>
+    </div>
+  }
+
+  @if (perfil(); as p) {
+    <!-- Cabecera del perfil -->
+    <div class="hero-section profile-hero">
+      <div class="avatar-wrapper">
+        @if (p.avatar?.imagen) {
+          <img [src]="p.avatar?.imagen" [alt]="p.nombre" class="avatar-image" />
+        } @else {
+          <div class="avatar-fallback">{{ iniciales(p) }}</div>
+        }
+      </div>
+      <h1>{{ p.nombre }} <span class="cyan-text">{{ p.apellido }}</span></h1>
+      <p class="tagline">&#64;{{ p.username }} &middot; {{ p.email }}</p>
+    </div>
+
+    <!-- Tarjetas de estadísticas físicas -->
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="icon">🎂</div>
+        <h3>Edad</h3>
+        <p class="stat-value">{{ p.edad }} <span class="stat-unit">años</span></p>
+      </div>
+
+      <div class="feature-card">
+        <div class="icon">⚖️</div>
+        <h3>Peso</h3>
+        <p class="stat-value">{{ p.peso }} <span class="stat-unit">kg</span></p>
+      </div>
+
+      <div class="feature-card">
+        <div class="icon">📏</div>
+        <h3>Altura</h3>
+        <p class="stat-value">{{ p.altura }} <span class="stat-unit">{{ p.altura > 3 ? 'cm' : 'm' }}</span></p>
+      </div>
+
+      <div class="feature-card">
+        <div class="icon">🔥</div>
+        <h3>IMC</h3>
+        <p class="stat-value">{{ calcularIMC(p.peso, p.altura) }}</p>
+      </div>
+    </div>
+
+    <!-- Llamado a la acción -->
+    <div class="cta-section">
+      <h2>¿Listo para superar tus límites?</h2>
+      <p>Explora tus rutinas, registra tu nutrición y conquista nuevos logros desde el menú lateral.</p>
+    </div>
+  }
+
+</div>

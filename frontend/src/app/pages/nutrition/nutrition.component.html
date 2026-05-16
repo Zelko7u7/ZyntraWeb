@@ -1,0 +1,70 @@
+<div class="nutrition-container">
+  <header class="page-header">
+    <h1>NUTRICIÓN <span class="cyan-text">PRO</span></h1>
+    <p>Optimiza tu combustible. Monitorea tus macros en tiempo real.</p>
+  </header>
+
+  <section class="section-block">
+    <h2 class="section-title">📋 Planes Disponibles</h2>
+    <div class="grid">
+      @for (plan of planes(); track plan.id) {
+        <div class="plan-card">
+          <div class="plan-header">
+            <h3>{{ plan.nombre }}</h3>
+            <span class="calories">{{ plan.calorias }} <small>KCAL</small></span>
+          </div>
+          
+          <div class="macros-container">
+            <div class="macro-item protein">
+              <span class="value">{{ plan.proteinas }}g</span>
+              <span class="label">PROTEÍNA</span>
+            </div>
+            <div class="macro-item carbs">
+              <span class="value">{{ plan.carbs }}g</span>
+              <span class="label">CARBS</span>
+            </div>
+            <div class="macro-item fats">
+              <span class="value">{{ plan.grasas }}g</span>
+              <span class="label">GRASAS</span>
+            </div>
+          </div>
+
+          <button class="btn-action" (click)="registrarComida(plan)">
+            <span class="icon">➕</span> REGISTRAR CONSUMO
+          </button>
+        </div>
+      } @empty {
+        <div class="empty-state">No hay planes nutricionales configurados.</div>
+      }
+    </div>
+  </section>
+
+  <hr class="divider">
+
+  <section class="section-block">
+    <h2 class="section-title">🕒 Bitácora de Hoy</h2>
+    <div class="history-timeline">
+      @for (registro of historial(); track registro.id) {
+        <div class="history-card">
+          <div class="time-stamp">
+            <span class="dot"></span>
+            {{ registro.fecha | date:'shortTime' }}
+          </div>
+          <div class="card-content">
+            <div class="main-info">
+              <span class="cal-glow">{{ registro.calorias }} KCAL</span>
+              <p class="date-detail">{{ registro.fecha | date:'mediumDate' }}</p>
+            </div>
+            <div class="macros-summary">
+              <span>P: <strong>{{ registro.proteinas }}g</strong></span>
+              <span>C: <strong>{{ registro.carbs }}g</strong></span>
+              <span>G: <strong>{{ registro.grasas }}g</strong></span>
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <div class="empty-state">Tu bitácora está vacía. ¡Registra tu primera comida!</div>
+      }
+    </div>
+  </section>
+</div>

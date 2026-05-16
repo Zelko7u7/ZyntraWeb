@@ -1,0 +1,176 @@
+.nutrition-container {
+  padding: 40px;
+  max-width: 1100px;
+  margin: 0 auto;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 50px;
+    h1 {
+      color: #ffffff;
+      font-size: 2.8rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      letter-spacing: 2px;
+      .cyan-text {
+        color: #00e5ff;
+        text-shadow: 0 0 15px rgba(0, 229, 255, 0.5);
+      }
+    }
+    p { color: #8da2b5; font-size: 1.1rem; }
+  }
+
+  .section-block {
+    margin-bottom: 50px;
+    .section-title {
+      color: #ffffff;
+      font-size: 1.4rem;
+      margin-bottom: 30px;
+      padding-left: 15px;
+      border-left: 4px solid #00e5ff;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+  }
+
+  /* Planes en formato Card Dark */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+
+    .plan-card {
+      background: rgba(18, 25, 36, 0.7);
+      border: 1px solid rgba(0, 229, 255, 0.1);
+      border-radius: 12px;
+      padding: 25px;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+
+      .plan-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 25px;
+        h3 { color: #ffffff; margin: 0; font-size: 1.2rem; text-transform: uppercase; }
+        .calories { 
+          color: #00e5ff; 
+          font-weight: 800; 
+          font-size: 1.4rem;
+          text-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+          small { font-size: 0.7rem; opacity: 0.7; }
+        }
+      }
+
+      .macros-container {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 25px;
+        background: rgba(0, 0, 0, 0.2);
+        padding: 15px;
+        border-radius: 8px;
+
+        .macro-item {
+          text-align: center;
+          .value { display: block; color: #ffffff; font-weight: 700; font-size: 1.1rem; }
+          .label { font-size: 0.65rem; color: #8da2b5; letter-spacing: 1px; }
+          
+          &.protein .value { color: #ff4d4d; }
+          &.carbs .value { color: #2d88ff; }
+          &.fats .value { color: #ffc107; }
+        }
+      }
+
+      .btn-action {
+        width: 100%;
+        background: transparent;
+        border: 1px solid #00e5ff;
+        color: #00e5ff;
+        padding: 12px;
+        border-radius: 30px;
+        font-weight: 700;
+        cursor: pointer;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        transition: all 0.3s ease;
+
+        &:hover {
+          background: #00e5ff;
+          color: #0b0f16;
+          box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+        }
+      }
+
+      &:hover {
+        border-color: #00e5ff;
+        transform: translateY(-5px);
+      }
+    }
+  }
+
+  /* Historial estilo Timeline */
+  .history-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    .history-card {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+
+      .time-stamp {
+        min-width: 80px;
+        color: #00e5ff;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        .dot { 
+          width: 8px; height: 8px; background: #00e5ff; border-radius: 50%; 
+          box-shadow: 0 0 8px #00e5ff;
+        }
+      }
+
+      .card-content {
+        flex: 1;
+        background: rgba(18, 25, 36, 0.5);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 15px 25px;
+        border-radius: 12px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .cal-glow {
+          color: #ffffff;
+          font-weight: 800;
+          font-size: 1.1rem;
+          margin-right: 15px;
+        }
+
+        .date-detail { color: #657b8f; margin: 0; font-size: 0.8rem; }
+
+        .macros-summary {
+          font-size: 0.85rem;
+          color: #8da2b5;
+          span { margin-left: 15px; strong { color: #e4e6eb; } }
+        }
+      }
+    }
+  }
+
+  .divider { border: none; border-top: 1px dashed rgba(0, 229, 255, 0.15); margin: 50px 0; }
+  
+  .empty-state {
+    background: rgba(18, 25, 36, 0.3);
+    border: 1px dashed #2a3b4c;
+    padding: 30px;
+    border-radius: 12px;
+    text-align: center;
+    color: #657b8f;
+    font-style: italic;
+  }
+}

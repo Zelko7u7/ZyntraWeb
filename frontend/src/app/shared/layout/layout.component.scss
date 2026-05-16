@@ -1,0 +1,11 @@
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: #05080c; /* El fondo oscuro que envuelve todo */
+}
+
+.main-content {
+  flex: 1; /* Esto le obliga a ocupar todo el espacio restante a la derecha */
+  width: 100%;
+  background: transparent;
+}

@@ -1,0 +1,68 @@
+<div class="login-container">
+  <div class="background-overlay"></div>
+
+  <div class="login-card">
+    <div class="brand">
+      <h2>NUEVO <span class="cyan-text">ATLETA</span></h2>
+    </div>
+    <p class="subtitle">ÚNETE A FITCONNECT PRO</p>
+
+    @if (errorMessage) {
+      <div class="error">{{ errorMessage }}</div>
+    }
+
+    <form (ngSubmit)="onRegister()">
+      <div class="form-group">
+        <label>Usuario</label>
+        <input type="text" [(ngModel)]="registro.username" name="username" required autocomplete="off">
+      </div>
+      
+      <div class="form-group">
+        <label>Correo Electrónico</label>
+        <input type="email" [(ngModel)]="registro.email" name="email" required autocomplete="off">
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" [(ngModel)]="registro.nombre" name="nombre" required>
+        </div>
+        <div class="form-group">
+          <label>Apellido</label>
+          <input type="text" [(ngModel)]="registro.apellido" name="apellido" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>Edad</label>
+          <input type="number" [(ngModel)]="registro.edad" name="edad" placeholder="Años" required>
+        </div>
+        <div class="form-group">
+          <label>Peso</label>
+          <input type="number" [(ngModel)]="registro.peso" name="peso" placeholder="kg" required>
+        </div>
+        <div class="form-group">
+          <label>Altura</label>
+          <input type="number" step="0.01" [(ngModel)]="registro.altura" name="altura" placeholder="cm o m" required>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" [(ngModel)]="registro.password" name="password" required>
+      </div>
+
+      <div class="form-group">
+        <label>Confirmar Contraseña</label>
+        <input type="password" [(ngModel)]="registro.confirmPassword" name="confirmPassword" required>
+      </div>
+
+      <button type="submit" class="btn-neon">FORJAR CUENTA</button>
+      
+      <div class="footer-link">
+        <p>¿Ya eres miembro? <a routerLink="/login" class="cyan-link">Inicia sesión aquí</a></p>
+      </div>
+    </form>
+  </div>
+</div>

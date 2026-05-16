@@ -1,0 +1,61 @@
+<div class="progress-container">
+  <header class="page-header">
+    <h1>PANEL DE <span class="cyan-text">PROGRESO</span></h1>
+    <p>Tu evolución física y técnica en tiempo real.</p>
+  </header>
+
+  @if (progreso()) {
+    <section class="level-showcase">
+      <div class="rank-badge">
+        <span class="rank-name">{{ rangoActual()?.nombre || 'SIN RANGO' }}</span>
+      </div>
+      
+      <div class="xp-info">
+        <div class="level-circle">
+          <span class="label">NIVEL</span>
+          <span class="number">{{ nivelActual()?.numero || 0 }}</span>
+        </div>
+        <div class="xp-bar-container">
+          <div class="xp-text">
+            <span>{{ progreso()?.xp_total }} XP</span>
+            <span>META: {{ nivelActual()?.xp_requerida }} XP</span>
+          </div>
+          <div class="bar-bg">
+            <div class="bar-fill" [style.width.%]="porcentajeXP()"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">🔥</div>
+        <div class="stat-value">{{ progreso()?.calorias_totales }}</div>
+        <div class="stat-label">Kcal Quemadas</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">🏋️</div>
+        <div class="stat-value">{{ progreso()?.entrenamientos }}</div>
+        <div class="stat-label">Sesiones</div>
+      </div>
+
+      <div class="stat-card highlight">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-value">{{ progreso()?.racha_actual }}</div>
+        <div class="stat-label">Racha Actual (Días)</div>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">👑</div>
+        <div class="stat-value">{{ progreso()?.mejor_racha }}</div>
+        <div class="stat-label">Mejor Racha</div>
+      </div>
+    </div>
+
+  } @else {
+    <div class="empty-state">
+      <p>Iniciando monitor de progreso... Si esto tarda, asegúrate de tener un registro en la tabla Progreso.</p>
+    </div>
+  }
+</div>

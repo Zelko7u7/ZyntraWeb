@@ -1,0 +1,14 @@
+/* src/styles.scss */
+
+* {
+  box-sizing: border-box;
+}
+
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  /* El nuevo fondo oscuro que amarra toda la app estilo FitConnect PRO */
+  background-color: #05080c; 
+  color: #ffffff;
+}

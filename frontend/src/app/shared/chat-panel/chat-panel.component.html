@@ -1,0 +1,48 @@
+@if (abierto) {
+  <div class="chat-overlay" (click)="cerrarPanel()"></div>
+
+  <aside class="chat-panel">
+    <div class="chat-header">
+      <div class="brand">
+        <h2>ASISTENTE <span class="cyan-text">IA</span></h2>
+        <p class="subtitle">Tu coach digital</p>
+      </div>
+      <button class="btn-close" (click)="cerrarPanel()" aria-label="Cerrar chat">✕</button>
+    </div>
+
+    <div class="chat-mensajes" #mensajesBox>
+      @for (msg of mensajes(); track $index) {
+        <div class="mensaje" [class.user]="msg.rol === 'user'" [class.ia]="msg.rol === 'ia'">
+          <div class="burbuja">
+            <p>{{ msg.contenido }}</p>
+            <span class="hora">{{ msg.fecha | date:'shortTime' }}</span>
+          </div>
+        </div>
+      }
+
+      @if (enviando()) {
+        <div class="mensaje ia">
+          <div class="burbuja typing">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+      }
+    </div>
+
+    <form class="chat-input" (ngSubmit)="enviarMensaje()">
+      <input
+        type="text"
+        [(ngModel)]="mensajeActual"
+        name="mensajeActual"
+        placeholder="Escribe tu pregunta..."
+        autocomplete="off"
+        [disabled]="enviando()"
+      />
+      <button type="submit" class="btn-send" [disabled]="enviando() || !mensajeActual.trim()">
+        ENVIAR
+      </button>
+    </form>
+  </aside>
+}

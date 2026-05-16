@@ -1,0 +1,34 @@
+<aside class="sidebar">
+  <div class="brand">
+    <h2>FITCONNECT <span class="cyan-text">PRO</span></h2>
+  </div>
+
+  <nav class="nav-menu">
+    <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">
+      <span class="icon">🏠</span> Inicio
+    </a>
+    <a routerLink="/achievements" routerLinkActive="active">
+      <span class="icon">🏆</span> Logros
+    </a>
+    <button type="button" class="nav-button" [class.active]="chatAbierto()" (click)="toggleChat()">
+      <span class="icon">💬</span> Chat IA
+    </button>
+    <a routerLink="/nutrition" routerLinkActive="active">
+      <span class="icon">🍏</span> Nutrición
+    </a>
+    <a routerLink="/progress" routerLinkActive="active">
+      <span class="icon">📈</span> Progreso
+    </a>
+    <a routerLink="/workouts" routerLinkActive="active">
+      <span class="icon">🏋️</span> Entrenamientos
+    </a>
+  </nav>
+
+  <div class="logout-container">
+    <button class="btn-logout" (click)="cerrarSesion()">
+      <span class="icon">🚪</span> Cerrar Sesión
+    </button>
+  </div>
+</aside>
+
+<app-chat-panel [abierto]="chatAbierto()" (cerrar)="cerrarChat()"></app-chat-panel>

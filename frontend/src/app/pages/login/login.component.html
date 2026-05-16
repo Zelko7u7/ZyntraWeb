@@ -1,0 +1,35 @@
+<div class="login-container">
+  <div class="background-overlay"></div>
+
+  <div class="login-card">
+    <div class="brand">
+      <h2>FITCONNECT <span class="cyan-text">PRO</span></h2>
+    </div>
+    <p class="subtitle">GET FIT. GET STRONGER.</p>
+
+    @if (errorMessage) {
+      <div class="error">
+        {{ errorMessage }}
+      </div>
+    }
+
+    <form (ngSubmit)="onLogin()">
+      <div class="form-group">
+        <label>Usuario</label>
+        <input type="text" [(ngModel)]="username" name="username" placeholder="Ingresa tu usuario" required autocomplete="off">
+      </div>
+      
+      <div class="form-group">
+        <label>Contraseña</label>
+        <input type="password" [(ngModel)]="password" name="password" placeholder="••••••••" required>
+      </div>
+
+      <button type="submit" class="btn-neon">Join Online</button>
+    </form>
+
+    <div class="footer-link">
+      <p>¿Aún no tienes una cuenta? <a routerLink="/register" class="cyan-link">Forja tu camino aquí</a></p>
+    </div>
+    
+  </div>
+</div>
