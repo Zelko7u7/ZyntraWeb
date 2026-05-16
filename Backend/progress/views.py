@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from .models import Nivel, Rango, Progreso
-from .serializers import *
+from .serializers import NivelSerializer, RangoSerializer, ProgresoSerializer
 
 
 class NivelViewSet(viewsets.ModelViewSet):
@@ -11,11 +11,6 @@ class NivelViewSet(viewsets.ModelViewSet):
 class RangoViewSet(viewsets.ModelViewSet):
     queryset = Rango.objects.all()
     serializer_class = RangoSerializer
-
-
-class ProgresoViewSet(viewsets.ModelViewSet):
-    queryset = Progreso.objects.all()
-    serializer_class = ProgresoSerializer
 
 
 class ProgresoViewSet(viewsets.ModelViewSet):

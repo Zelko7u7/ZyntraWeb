@@ -121,7 +121,7 @@ export class WorkoutsComponent implements OnInit {
       fecha: new Date().toISOString(),
       duracion: rutina.duracion_min,
       calorias: Math.floor(Math.random() * (400 - 200 + 1)) + 200,
-      estado: 'Completado'
+      estado: 'en_progreso'
     };
 
     this.http.post(this.apiEntrenamientos, data).subscribe({
@@ -129,6 +129,26 @@ export class WorkoutsComponent implements OnInit {
       error: (err) => {
         console.error(err);
         this.errorMessage.set('No se pudo registrar el entrenamiento.');
+      }
+    });
+  }
+
+  cambiarEstado(entrenamiento: Entrenamiento, nuevoEstado: string) {
+    if (!entrenamiento.id || entrenamiento.estado === nuevoEstado) return;
+
+    const data = {
+      rutina: entrenamiento.rutina,
+      fecha: entrenamiento.fecha,
+      duracion: entrenamiento.duracion,
+      calorias: entrenamiento.calorias,
+      estado: nuevoEstado
+    };
+
+    this.http.put(`${this.apiEntrenamientos}${entrenamiento.id}/`, data).subscribe({
+      next: () => this.cargarDatos(),
+      error: (err) => {
+        console.error(err);
+        this.errorMessage.set('No se pudo actualizar el estado.');
       }
     });
   }
@@ -191,7 +211,7 @@ export class WorkoutsComponent implements OnInit {
       fecha: new Date().toISOString(),
       duracion: 0,
       calorias: 0,
-      estado: 'Completado'
+      estado: 'en_progreso'
     };
   }
 

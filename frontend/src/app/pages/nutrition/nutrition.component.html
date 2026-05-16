@@ -4,8 +4,18 @@
     <p>Optimiza tu combustible. Monitorea tus macros en tiempo real.</p>
   </header>
 
+  @if (errorMessage()) {
+    <div class="error-banner">{{ errorMessage() }}</div>
+  }
+
   <section class="section-block">
-    <h2 class="section-title">📋 Planes Disponibles</h2>
+    <div class="section-header">
+      <h2 class="section-title">📋 Planes Disponibles</h2>
+      <button class="btn-new" (click)="abrirNuevoPlan()">
+        <span class="icon">➕</span> NUEVA DIETA
+      </button>
+    </div>
+
     <div class="grid">
       @for (plan of planes(); track plan.id) {
         <div class="plan-card">
@@ -13,7 +23,7 @@
             <h3>{{ plan.nombre }}</h3>
             <span class="calories">{{ plan.calorias }} <small>KCAL</small></span>
           </div>
-          
+
           <div class="macros-container">
             <div class="macro-item protein">
               <span class="value">{{ plan.proteinas }}g</span>
@@ -29,12 +39,20 @@
             </div>
           </div>
 
-          <button class="btn-action" (click)="registrarComida(plan)">
-            <span class="icon">➕</span> REGISTRAR CONSUMO
-          </button>
+          <div class="card-actions">
+            <button class="btn-action" (click)="registrarComida(plan)">
+              <span class="icon">➕</span> REGISTRAR
+            </button>
+            <button class="btn-icon edit" (click)="abrirEditarPlan(plan)" title="Editar">
+              ✏️
+            </button>
+            <button class="btn-icon delete" (click)="eliminarPlan(plan)" title="Eliminar">
+              🗑️
+            </button>
+          </div>
         </div>
       } @empty {
-        <div class="empty-state">No hay planes nutricionales configurados.</div>
+        <div class="empty-state">No hay planes nutricionales. Crea el primero con "Nueva Dieta".</div>
       }
     </div>
   </section>
@@ -60,6 +78,9 @@
               <span>C: <strong>{{ registro.carbs }}g</strong></span>
               <span>G: <strong>{{ registro.grasas }}g</strong></span>
             </div>
+            <button class="btn-icon delete small" (click)="eliminarRegistro(registro)" title="Eliminar">
+              🗑️
+            </button>
           </div>
         </div>
       } @empty {
@@ -68,3 +89,43 @@
     </div>
   </section>
 </div>
+
+@if (modalAbierto()) {
+  <div class="modal-overlay" (click)="cerrarModal()">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h3>{{ editando() ? 'EDITAR DIETA' : 'NUEVA DIETA' }}</h3>
+
+      <form (ngSubmit)="guardarPlan()">
+        <label>
+          Nombre del plan
+          <input type="text" [(ngModel)]="planForm.nombre" name="nombre" required placeholder="Ej: Definición Pro">
+        </label>
+
+        <label>
+          Calorías totales (kcal)
+          <input type="number" [(ngModel)]="planForm.calorias" name="calorias" required min="0">
+        </label>
+
+        <div class="macros-row">
+          <label>
+            Proteínas (g)
+            <input type="number" [(ngModel)]="planForm.proteinas" name="proteinas" required min="0">
+          </label>
+          <label>
+            Carbohidratos (g)
+            <input type="number" [(ngModel)]="planForm.carbs" name="carbs" required min="0">
+          </label>
+          <label>
+            Grasas (g)
+            <input type="number" [(ngModel)]="planForm.grasas" name="grasas" required min="0">
+          </label>
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" (click)="cerrarModal()">Cancelar</button>
+          <button type="submit" class="btn-save">{{ editando() ? 'Guardar cambios' : 'Crear dieta' }}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+}

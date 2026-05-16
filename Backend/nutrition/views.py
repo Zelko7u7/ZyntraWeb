@@ -1,16 +1,11 @@
 from rest_framework import viewsets
 from .models import PlanNutricional, RegistroComida
-from .serializers import *
+from .serializers import PlanNutricionalSerializer, RegistroComidaSerializer
 
 
 class PlanNutricionalViewSet(viewsets.ModelViewSet):
     queryset = PlanNutricional.objects.all()
     serializer_class = PlanNutricionalSerializer
-
-
-class RegistroComidaViewSet(viewsets.ModelViewSet):
-    queryset = RegistroComida.objects.all()
-    serializer_class = RegistroComidaSerializer
 
 
 class RegistroComidaViewSet(viewsets.ModelViewSet):

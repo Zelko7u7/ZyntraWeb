@@ -18,7 +18,7 @@
         <div class="xp-bar-container">
           <div class="xp-text">
             <span>{{ progreso()?.xp_total }} XP</span>
-            <span>META: {{ nivelActual()?.xp_requerida }} XP</span>
+            <span>META: {{ xpMeta() }} XP</span>
           </div>
           <div class="bar-bg">
             <div class="bar-fill" [style.width.%]="porcentajeXP()"></div>
