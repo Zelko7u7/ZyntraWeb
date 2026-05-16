@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(New-Item *)",
+      "Bash(npx tsc *)",
+      "PowerShell(npx ng build --configuration=development 2>&1 | Select-Object -Last 30; \"EXIT=$LASTEXITCODE\")"
+    ]
+  }
+}
