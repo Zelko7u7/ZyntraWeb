@@ -40,11 +40,14 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         try:
             perfil = Usuario.objects.get(user=user)
-            logro_inicio = Logro.objects.filter(nombre="Iniciar cuenta").first()
+            logro_inicio = Logro.objects.filter(
+                nombre="Iniciar cuenta",
+                usuario__isnull=True,
+            ).first()
             if logro_inicio:
                 LogroUsuario.objects.get_or_create(
                     usuario=perfil,
-                    logro=logro_inicio
+                    logro=logro_inicio,
                 )
         except Usuario.DoesNotExist:
             pass

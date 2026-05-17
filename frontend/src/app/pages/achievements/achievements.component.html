@@ -12,12 +12,13 @@
   <section class="section-block">
     <h2 class="section-title">🌟 Mis Logros</h2>
     <div class="grid">
-      @for (logro of logrosDesbloqueados(); track logro.id) {
+      @for (lu of logrosUsuario(); track lu.id) {
         <div class="card unlocked">
           <div class="icon">🌟</div>
           <div class="info">
-            <h3>{{ logro.nombre }}</h3>
-            <span class="xp">+{{ logro.xp }} XP</span>
+            <h3>{{ lu.logro_nombre }}</h3>
+            <span class="xp">+{{ lu.logro_xp }} XP</span>
+            <span class="date">{{ lu.fecha | date:'dd/MM/yyyy' }}</span>
           </div>
         </div>
       } @empty {
@@ -48,13 +49,18 @@
             <span class="xp">+{{ logro.xp }} XP</span>
           </div>
           <div class="card-actions">
+            @if (estaDesbloqueado(logro.id!)) {
+              <button class="btn-icon btn-warning" (click)="bloquearLogro(logro)" title="Bloquear">🔒</button>
+            } @else {
+              <button class="btn-icon btn-success" (click)="desbloquearLogro(logro)" title="Desbloquear">✓</button>
+            }
             <button class="btn-icon" (click)="abrirEditarLogro(logro)" title="Editar">✏️</button>
             <button class="btn-icon btn-danger" (click)="eliminarLogro(logro)" title="Eliminar">🗑️</button>
           </div>
         </div>
       } @empty {
         <div class="empty-state">
-          <p>No hay logros en el catálogo. Crea el primero.</p>
+          <p>Aún no tienes logros en tu catálogo. Crea el primero para comenzar.</p>
         </div>
       }
     </div>
@@ -78,6 +84,13 @@
           <label>XP otorgado</label>
           <input type="number" name="xp" [(ngModel)]="logroForm.xp" min="0" required>
         </div>
+
+        @if (!editando()) {
+          <label class="checkbox-row">
+            <input type="checkbox" name="desbloquearAhora" [(ngModel)]="logroForm.desbloquearAhora">
+            <span>Desbloquear ahora y añadir a "Mis Logros"</span>
+          </label>
+        }
 
         <button type="submit" class="btn-neon" [disabled]="form.invalid">
           {{ editando() ? 'GUARDAR CAMBIOS' : 'CREAR LOGRO' }}

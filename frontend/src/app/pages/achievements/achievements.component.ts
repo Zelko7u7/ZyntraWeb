@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal, computed } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -7,13 +7,21 @@ interface Logro {
   id?: string;
   nombre: string;
   xp: number;
+  usuario?: string | null;
+  desbloqueado?: boolean;
 }
 
 interface LogroUsuario {
   id: string;
   usuario: string;
   logro: string;
+  logro_nombre: string;
+  logro_xp: number;
   fecha: string;
+}
+
+interface LogroForm extends Logro {
+  desbloquearAhora?: boolean;
 }
 
 @Component({
@@ -32,14 +40,9 @@ export class AchievementsComponent implements OnInit {
   logrosUsuario = signal<LogroUsuario[]>([]);
   errorMessage = signal<string>('');
 
-  // Modal
   modalAbierto = signal<boolean>(false);
   editando = signal<boolean>(false);
-  logroForm: Logro = this.logroVacio();
-
-  logrosDesbloqueados = computed(() => {
-    return this.logros().filter(logro => this.estaDesbloqueado(logro.id!));
-  });
+  logroForm: LogroForm = this.logroVacio();
 
   ngOnInit() {
     this.cargarDatos();
@@ -65,12 +68,14 @@ export class AchievementsComponent implements OnInit {
   abrirNuevoLogro() {
     this.logroForm = this.logroVacio();
     this.editando.set(false);
+    this.errorMessage.set('');
     this.modalAbierto.set(true);
   }
 
   abrirEditarLogro(l: Logro) {
-    this.logroForm = { ...l };
+    this.logroForm = { ...l, desbloquearAhora: false };
     this.editando.set(true);
+    this.errorMessage.set('');
     this.modalAbierto.set(true);
   }
 
@@ -85,13 +90,19 @@ export class AchievementsComponent implements OnInit {
     };
 
     const peticion = this.editando()
-      ? this.http.put(`${this.apiLogros}${this.logroForm.id}/`, data)
-      : this.http.post(this.apiLogros, data);
+      ? this.http.put<Logro>(`${this.apiLogros}${this.logroForm.id}/`, data)
+      : this.http.post<Logro>(this.apiLogros, data);
+
+    const desbloquearTrasCrear = !this.editando() && !!this.logroForm.desbloquearAhora;
 
     peticion.subscribe({
-      next: () => {
-        this.cerrarModal();
-        this.cargarDatos();
+      next: (saved) => {
+        if (desbloquearTrasCrear && saved?.id) {
+          this.desbloquearLogro(saved, true);
+        } else {
+          this.cerrarModal();
+          this.cargarDatos();
+        }
       },
       error: (err) => {
         console.error(err);
@@ -101,6 +112,7 @@ export class AchievementsComponent implements OnInit {
   }
 
   eliminarLogro(l: Logro) {
+    if (!l.id) return;
     if (!confirm(`¿Eliminar el logro "${l.nombre}"?`)) return;
     this.http.delete(`${this.apiLogros}${l.id}/`).subscribe({
       next: () => this.cargarDatos(),
@@ -111,7 +123,33 @@ export class AchievementsComponent implements OnInit {
     });
   }
 
-  private logroVacio(): Logro {
-    return { nombre: '', xp: 10 };
+  // ============ Desbloquear / Bloquear ============
+  desbloquearLogro(l: Logro, cerrarTras: boolean = false) {
+    if (!l.id) return;
+    this.http.post(`${this.apiLogros}${l.id}/unlock/`, {}).subscribe({
+      next: () => {
+        if (cerrarTras) this.cerrarModal();
+        this.cargarDatos();
+      },
+      error: (err) => {
+        console.error(err);
+        this.errorMessage.set('No se pudo desbloquear el logro.');
+      }
+    });
+  }
+
+  bloquearLogro(l: Logro) {
+    if (!l.id) return;
+    this.http.post(`${this.apiLogros}${l.id}/lock/`, {}).subscribe({
+      next: () => this.cargarDatos(),
+      error: (err) => {
+        console.error(err);
+        this.errorMessage.set('No se pudo bloquear el logro.');
+      }
+    });
+  }
+
+  private logroVacio(): LogroForm {
+    return { nombre: '', xp: 10, desbloquearAhora: true };
   }
 }

@@ -3,7 +3,9 @@
     "allow": [
       "PowerShell(New-Item *)",
       "Bash(npx tsc *)",
-      "PowerShell(npx ng build --configuration=development 2>&1 | Select-Object -Last 30; \"EXIT=$LASTEXITCODE\")"
+      "PowerShell(npx ng build --configuration=development 2>&1 | Select-Object -Last 30; \"EXIT=$LASTEXITCODE\")",
+      "Bash(git -C \"C:\\\\Users\\\\Zelko Jun\\\\Desktop\\\\Django\\\\Zyntra2\" ls-files)",
+      "Bash(grep -E \"node_modules|dist|\\\\.env$|db\\\\.sqlite|__pycache__\")"
     ]
   }
 }
