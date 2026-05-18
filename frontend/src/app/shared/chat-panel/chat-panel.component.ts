@@ -1,20 +1,28 @@
 import {
+  AfterViewChecked,
   Component,
   ElementRef,
+  EventEmitter,
   Input,
   Output,
-  EventEmitter,
   ViewChild,
-  AfterViewChecked,
-  signal
+  inject,
+  signal,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
 
 export interface ChatMessage {
   rol: 'user' | 'ia';
   contenido: string;
   fecha: Date;
+}
+
+interface EnviarResponse {
+  conversacion_id: string;
+  mensaje_usuario: { id: string; rol: string; contenido: string; fecha: string };
+  mensaje_ia: { id: string; rol: string; contenido: string; fecha: string };
 }
 
 @Component({
@@ -29,6 +37,10 @@ export class ChatPanelComponent implements AfterViewChecked {
   @Output() cerrar = new EventEmitter<void>();
 
   @ViewChild('mensajesBox') private mensajesBox?: ElementRef<HTMLDivElement>;
+  @ViewChild('inputBox') private inputBox?: ElementRef<HTMLTextAreaElement>;
+
+  private http = inject(HttpClient);
+  private apiEnviar = 'http://localhost:8000/api/chat/chatconversacion/enviar/';
 
   mensajeActual = '';
   enviando = signal<boolean>(false);
@@ -41,12 +53,16 @@ export class ChatPanelComponent implements AfterViewChecked {
     }
   ]);
 
-  private debeHacerScroll = true;
+  mostrarBotonBajar = signal<boolean>(false);
+
+  private conversacionId: string | null = null;
+  private autoScrollPendiente = true;
+  private estabaAlFinal = true;
 
   ngAfterViewChecked() {
-    if (this.debeHacerScroll) {
-      this.scrollAlFinal();
-      this.debeHacerScroll = false;
+    if (this.autoScrollPendiente && this.estabaAlFinal) {
+      this.irAlFinal();
+      this.autoScrollPendiente = false;
     }
   }
 
@@ -54,50 +70,86 @@ export class ChatPanelComponent implements AfterViewChecked {
     const texto = this.mensajeActual.trim();
     if (!texto || this.enviando()) return;
 
+    this.estabaAlFinal = true;
     this.mensajes.update(m => [
       ...m,
       { rol: 'user', contenido: texto, fecha: new Date() }
     ]);
     this.mensajeActual = '';
+    this.resetTextareaHeight();
     this.enviando.set(true);
-    this.debeHacerScroll = true;
+    this.autoScrollPendiente = true;
 
-    // Respuesta simulada hasta tener backend IA
-    setTimeout(() => {
-      this.mensajes.update(m => [
-        ...m,
-        {
-          rol: 'ia',
-          contenido: this.generarRespuestaSimulada(texto),
-          fecha: new Date()
-        }
-      ]);
-      this.enviando.set(false);
-      this.debeHacerScroll = true;
-    }, 900);
+    this.http.post<EnviarResponse>(this.apiEnviar, {
+      mensaje: texto,
+      conversacion_id: this.conversacionId,
+    }).subscribe({
+      next: (res) => {
+        this.conversacionId = res.conversacion_id;
+        this.mensajes.update(m => [
+          ...m,
+          {
+            rol: 'ia',
+            contenido: res.mensaje_ia.contenido,
+            fecha: new Date(res.mensaje_ia.fecha),
+          }
+        ]);
+        this.enviando.set(false);
+        this.autoScrollPendiente = true;
+      },
+      error: (err) => {
+        console.error(err);
+        const detalle =
+          err?.status === 503
+            ? 'El modelo de IA todavía no está disponible. Si es la primera vez que levantas el contenedor, espera a que termine de descargarse (~2 GB).'
+            : 'Hubo un problema al contactar al asistente. Intenta de nuevo en un momento.';
+        this.mensajes.update(m => [
+          ...m,
+          { rol: 'ia', contenido: detalle, fecha: new Date() }
+        ]);
+        this.enviando.set(false);
+        this.autoScrollPendiente = true;
+      }
+    });
   }
 
   cerrarPanel() {
     this.cerrar.emit();
   }
 
-  private generarRespuestaSimulada(texto: string): string {
-    const lower = texto.toLowerCase();
-    if (lower.includes('rutina') || lower.includes('entren')) {
-      return 'Te recomiendo empezar con una rutina full-body 3 días a la semana. Pronto podré sugerirte rutinas personalizadas según tu progreso.';
-    }
-    if (lower.includes('comida') || lower.includes('nutri') || lower.includes('dieta')) {
-      return 'Para tus macros, prioriza proteína magra y carbohidratos complejos. Revisa la sección de Nutrición para ver tu plan asignado.';
-    }
-    if (lower.includes('hola') || lower.includes('buenas')) {
-      return '¡Hola! ¿En qué puedo ayudarte hoy? Puedo hablarte de entrenamientos, nutrición o tu progreso.';
-    }
-    return 'Recibí tu mensaje. Pronto estaré conectado a un modelo de IA para responder con más detalle. ⚙️';
+  onScroll() {
+    if (!this.mensajesBox) return;
+    const el = this.mensajesBox.nativeElement;
+    const cercaDelFinal = el.scrollHeight - el.scrollTop - el.clientHeight < 80;
+    this.estabaAlFinal = cercaDelFinal;
+    this.mostrarBotonBajar.set(!cercaDelFinal);
   }
 
-  private scrollAlFinal() {
+  irAlFinal() {
     if (!this.mensajesBox) return;
     const el = this.mensajesBox.nativeElement;
     el.scrollTop = el.scrollHeight;
+    this.mostrarBotonBajar.set(false);
+    this.estabaAlFinal = true;
+  }
+
+  autoResize() {
+    const ta = this.inputBox?.nativeElement;
+    if (!ta) return;
+    ta.style.height = 'auto';
+    const max = 160; // ~7 líneas
+    ta.style.height = Math.min(ta.scrollHeight, max) + 'px';
+  }
+
+  onKeyDown(event: KeyboardEvent) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.enviarMensaje();
+    }
+  }
+
+  private resetTextareaHeight() {
+    const ta = this.inputBox?.nativeElement;
+    if (ta) ta.style.height = 'auto';
   }
 }

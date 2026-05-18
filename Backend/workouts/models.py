@@ -3,6 +3,13 @@ from django.db import models
 
 class Rutina(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    usuario = models.ForeignKey(
+        "users.Usuario",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="rutinas_creadas",
+    )
     nombre = models.CharField(max_length=100)
     objetivo = models.CharField(max_length=100)
     nivel = models.CharField(max_length=50)

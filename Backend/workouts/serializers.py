@@ -6,6 +6,7 @@ class RutinaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rutina
         fields = '__all__'
+        read_only_fields = ['usuario']
 
 
 class EjercicioSerializer(serializers.ModelSerializer):

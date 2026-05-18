@@ -10,11 +10,11 @@
       <button class="btn-close" (click)="cerrarPanel()" aria-label="Cerrar chat">✕</button>
     </div>
 
-    <div class="chat-mensajes" #mensajesBox>
+    <div class="chat-mensajes" #mensajesBox (scroll)="onScroll()">
       @for (msg of mensajes(); track $index) {
         <div class="mensaje" [class.user]="msg.rol === 'user'" [class.ia]="msg.rol === 'ia'">
           <div class="burbuja">
-            <p>{{ msg.contenido }}</p>
+            <p class="contenido">{{ msg.contenido }}</p>
             <span class="hora">{{ msg.fecha | date:'shortTime' }}</span>
           </div>
         </div>
@@ -31,15 +31,24 @@
       }
     </div>
 
+    @if (mostrarBotonBajar()) {
+      <button class="btn-bajar" (click)="irAlFinal()" aria-label="Ir al final">
+        ↓
+      </button>
+    }
+
     <form class="chat-input" (ngSubmit)="enviarMensaje()">
-      <input
-        type="text"
+      <textarea
+        #inputBox
         [(ngModel)]="mensajeActual"
         name="mensajeActual"
         placeholder="Escribe tu pregunta..."
         autocomplete="off"
+        rows="1"
         [disabled]="enviando()"
-      />
+        (input)="autoResize()"
+        (keydown)="onKeyDown($event)"
+      ></textarea>
       <button type="submit" class="btn-send" [disabled]="enviando() || !mensajeActual.trim()">
         ENVIAR
       </button>

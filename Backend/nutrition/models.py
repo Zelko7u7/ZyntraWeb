@@ -3,6 +3,13 @@ from django.db import models
 
 class PlanNutricional(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    usuario = models.ForeignKey(
+        "users.Usuario",
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name="planes_creados",
+    )
     nombre = models.CharField(max_length=100)
     calorias = models.IntegerField()
     proteinas = models.IntegerField()

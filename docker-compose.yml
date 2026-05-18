@@ -27,6 +27,8 @@ services:
       SECRET_KEY: ${SECRET_KEY:-django-insecure-dev-only-replace-me-in-production}
       DEBUG: ${DEBUG:-True}
       ALLOWED_HOSTS: ${ALLOWED_HOSTS:-localhost,127.0.0.1,backend}
+      OLLAMA_URL: ${OLLAMA_URL:-http://ollama:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-llama3.2:3b}
     volumes:
       - ./Backend:/app
     ports:
@@ -38,6 +40,30 @@ services:
       sh -c "python manage.py migrate --noinput &&
              python manage.py init_data &&
              python manage.py runserver 0.0.0.0:8000"
+
+  ollama:
+    image: ollama/ollama:latest
+    volumes:
+      - ollama_data:/root/.ollama
+    ports:
+      - "11434:11434"
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  ollama-init:
+    image: ollama/ollama:latest
+    depends_on:
+      ollama:
+        condition: service_healthy
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      OLLAMA_HOST: http://ollama:11434
+    entrypoint: ["sh", "-c", "ollama pull ${OLLAMA_MODEL:-llama3.2:3b}"]
+    restart: "no"
 
   frontend:
     build:
@@ -52,3 +78,4 @@ services:
 
 volumes:
   postgres_data:
+  ollama_data:
