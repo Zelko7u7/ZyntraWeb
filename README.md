@@ -9,7 +9,7 @@ Aplicación web de fitness gamificada. Permite registrar entrenamientos, llevar 
 | Backend | Django 6 + Django REST Framework |
 | Autenticación | JWT (Simple JWT) |
 | Base de datos | PostgreSQL |
-| Frontend | Angular 19 |
+| Frontend | Angular 21 |
 
 ## Estructura del proyecto
 
@@ -29,7 +29,37 @@ ZyntraWeb/
 - Sistema de logros desbloqueables
 - Chat con IA integrado
 
-## Configuración del Backend
+## Configuración rápida con Docker (recomendado)
+
+Si tenés Docker Desktop instalado, levantar todo el stack es un solo comando:
+
+```bash
+docker compose up --build
+```
+
+Esto arranca:
+
+- **Postgres 16** en el puerto `5432`
+- **Backend Django** en `http://localhost:8000` (con migraciones y seed de niveles/rangos automáticos)
+- **Frontend Angular** en `http://localhost:4200`
+
+Para parar todo: `docker compose down`. Para borrar también la BD: `docker compose down -v`.
+
+Variables de entorno opcionales (crear un `.env` en la raíz para sobreescribir defaults):
+
+```env
+DB_NAME=fitness_db
+DB_USER=fitness_user
+DB_PASSWORD=fitness_pass
+SECRET_KEY=tu-secret-key
+DEBUG=True
+```
+
+Si ya tenés Postgres corriendo en el puerto `5432` localmente, cambia el mapeo en `docker-compose.yml` (`"5433:5432"` por ejemplo) para evitar conflicto.
+
+## Configuración manual (sin Docker)
+
+### Backend
 
 ```bash
 cd Backend
@@ -46,21 +76,22 @@ DB_USER=tu_usuario
 DB_PASSWORD=tu_contraseña
 ```
 
-Crea la base de datos en PostgreSQL y ejecuta las migraciones:
+Crea la base de datos en PostgreSQL y ejecuta las migraciones y el seed:
 
 ```bash
 python manage.py migrate
+python manage.py init_data       # crea niveles, rangos y el logro "Iniciar cuenta"
 python manage.py runserver
 ```
 
 La API estará disponible en `http://localhost:8000`
 
-## Configuración del Frontend
+### Frontend
 
 ```bash
 cd frontend
 npm install
-ng serve
+npm start
 ```
 
 La aplicación estará disponible en `http://localhost:4200`
